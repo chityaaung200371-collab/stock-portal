@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stock Portal - Dashboard</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 24px;
+    }
+    .container {
+      max-width: 1160px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 24px;
+      border-radius: 10px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      background: #dcfce7;
+      color: #166534;
+      font-weight: 600;
+    }
+    .logout-btn {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      background: #dc2626;
+      color: #fff;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .logout-btn:hover {
+      background: #b91c1c;
+    }
+    .panel {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 22px;
+    }
+    .add-section {
+      display: none;
+    }
+    .panel h3 {
+      margin: 0 0 12px 0;
+      font-size: 16px;
+      color: #0f172a;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      align-items: end;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #334155;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 14px;
+      background: #fff;
+    }
+    .btn-primary {
+      padding: 9px 16px;
+      border: none;
+      border-radius: 6px;
+      background: #2563eb;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+    .btn-sell {
+      padding: 9px 16px;
+      border: none;
+      border-radius: 6px;
+      background: #d97706;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-sell:hover {
+      background: #b45309;
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .status-msg {
+      margin-top: 10px;
+      font-size: 13px;
+      min-height: 18px;
+    }
+    .list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .list-header h3 {
+      margin: 0;
+    }
+    .search-box {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex: 1;
+      max-width: 380px;
+    }
+    .search-box input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    .clear-btn {
+      padding: 8px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      background: #f8fafc;
+      color: #334155;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .clear-btn:hover {
+      background: #e2e8f0;
+    }
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 6px;
+    }
+    th, td {
+      border: 1px solid #e5e7eb;
+      padding: 9px 10px;
+      text-align: left;
+      font-size: 13px;
+      vertical-align: middle;
+    }
+    th {
+      background: #f9fafb;
+    }
+    .id-cell {
+      font-family: monospace;
+      font-size: 12px;
+      color: #475569;
+    }
+    .fill-group, .action-group {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .fill-input {
+      width: 68px;
+      padding: 6px 8px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    .fill-btn {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 6px;
+      background: #059669;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .fill-btn:hover {
+      background: #047857;
+    }
+    .edit-btn {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 6px;
+      background: #4f46e5;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .edit-btn:hover {
+      background: #4338ca;
+    }
+    .save-btn {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 6px;
+      background: #16a34a;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .cancel-btn {
+      padding: 6px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      background: #fff;
+      color: #334155;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .inline-edit-input {
+      width: 100%;
+      min-width: 70px;
+      box-sizing: border-box;
+      padding: 5px 7px;
+      border: 1px solid #94a3b8;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    .sales-section {
+      margin-top: 28px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <h2 style="margin: 0 0 6px 0;">Stock Portal Dashboard</h2>
+        <div id="user-meta">Loading...</div>
+      </div>
+      <button type="button" class="logout-btn" id="logout-btn">Logout</button>
+    </div>
+
+    <!-- Owner သီးသန့် ပစ္စည်းအသစ်ထည့်ရန် -->
+    <div class="panel add-section" id="add-product-section">
+      <h3>+ ပစ္စည်းအသစ်ထည့်ရန် (Owner Only)</h3>
+      <form id="add-product-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="prod-name">ပစ္စည်းအမည် (Name) *</label>
+            <input type="text" id="prod-name" placeholder="ဥပမာ - ကော်ဖီမှုန့်" required />
+          </div>
+          <div class="form-group">
+            <label for="prod-sku">ကုဒ်နံပါတ် (SKU)</label>
+            <input type="text" id="prod-sku" placeholder="ဥပမာ - CF-001" />
+          </div>
+          <div class="form-group">
+            <label for="prod-price">ဈေးနှုန်း (Price) *</label>
+            <input type="number" id="prod-price" min="0" step="any" placeholder="0" required />
+          </div>
+          <div class="form-group">
+            <label for="prod-qty">လက်ကျန်အရေအတွက် (Stock Qty) *</label>
+            <input type="number" id="prod-qty" min="0" step="1" placeholder="0" required />
+          </div>
+          <div class="form-group">
+            <button type="submit" class="btn-primary" id="add-btn">သိမ်းမည် (Add)</button>
+          </div>
+        </div>
+      </form>
+      <div id="add-status" class="status-msg"></div>
+    </div>
+
+    <!-- ရောင်းလိုက်သော ပစ္စည်းနုတ်ရန် (Owner + Staff/အခြားသူများ သုံးနိုင်) -->
+    <div class="panel" id="sell-section">
+      <h3>ရောင်းချမှုမှတ်တမ်း နှင့် လက်ကျန်နုတ်ရန် (Sell / Deduct Stock)</h3>
+      <form id="sell-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="sell-product-select">ပစ္စည်းရွေးရန် (Product) *</label>
+            <select id="sell-product-select" required>
+              <option value="">-- ပစ္စည်းရွေးပါ --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="sell-qty">ရောင်းလိုက်သည့် အရေအတွက် (Sell Qty) *</label>
+            <input type="number" id="sell-qty" min="1" step="1" placeholder="1" required />
+          </div>
+          <div class="form-group">
+            <button type="submit" class="btn-sell" id="sell-btn">ရောင်းပြီး နုတ်မည် (Sell)</button>
+          </div>
+        </div>
+      </form>
+      <div id="sell-status" class="status-msg"></div>
+    </div>
+
+    <!-- ပစ္စည်းလက်ကျန်စာရင်း ဇယားကွက် -->
+    <div class="list-header">
+      <h3>ပစ္စည်းလက်ကျန်စာရင်း (Stock Inventory)</h3>
+      <div class="search-box">
+        <input type="search" id="search-input" placeholder="Search Name, SKU, or ID..." />
+        <button type="button" class="clear-btn" id="clear-search-btn">Clear</button>
+      </div>
+    </div>
+
+    <div id="stock-status" class="status-msg"></div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>SKU</th>
+            <th>Price</th>
+            <th>Stock Qty</th>
+            <th>Fill Stock (+Qty)</th>
+            <th>Owner Edit</th>
+          </tr>
+        </thead>
+        <tbody id="products-body">
+          <tr><td colspan="7">Loading products...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ရောင်းချခဲ့သည့် အချိန်ပြ မှတ်တမ်းဇယား -->
+    <div class="sales-section">
+      <h3>ရောင်းချမှု မှတ်တမ်းနှင့် အချိန် (Sales History & Time)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ရောင်းချသည့် အချိန် (Time)</th>
+              <th>ပစ္စည်းအမည် (Product)</th>
+              <th>ရောင်းသည့် အရေအတွက်</th>
+              <th>ဈေးနှုန်း</th>
+              <th>စုစုပေါင်း (Total)</th>
+              <th>ရောင်းသူ (By)</th>
+            </tr>
+          </thead>
+          <tbody id="sales-body">
+            <tr><td colspan="6">Loading sales history...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script>
+    const SUPABASE_URL = 'https://aubwiksmxqqwjbhabgop.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_t2uVkTTlpH7yDpjZzmpM1w__hRudXgl';
+
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    window.supabaseClient = supabaseClient;
+
+    const userMetaEl = document.getElementById('user-meta');
+    const productsBody = document.getElementById('products-body');
+    const salesBody = document.getElementById('sales-body');
+    const logoutBtn = document.getElementById('logout-btn');
+    const addSection = document.getElementById('add-product-section');
+    const addForm = document.getElementById('add-product-form');
+    const addBtn = document.getElementById('add-btn');
+    const addStatus = document.getElementById('add-status');
+    const sellForm = document.getElementById('sell-form');
+    const sellSelect = document.getElementById('sell-product-select');
+    const sellBtn = document.getElementById('sell-btn');
+    const sellStatus = document.getElementById('sell-status');
+    const searchInput = document.getElementById('search-input');
+    const clearSearchBtn = document.getElementById('clear-search-btn');
+    const stockStatus = document.getElementById('stock-status');
+
+    let allProducts = [];
+    let currentUser = null;
+    let currentRole = null;
+    let editingProductId = null;
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, (ch) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[ch]));
+    }
+
+    function getStockQty(product) {
+      const raw = product.stock_qty ?? product.quantity ?? 0;
+      const num = Number(raw);
+      return Number.isFinite(num) ? num : 0;
+    }
+
+    function formatDateTime(isoStr) {
+      if (!isoStr) return '-';
+      const d = new Date(isoStr);
+      if (Number.isNaN(d.getTime())) return isoStr;
+      return d.toLocaleString('my-MM', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+    }
+
+    function populateSellDropdown() {
+      const prevVal = sellSelect.value;
+      const options = ['<option value="">-- ပစ္စည်းရွေးပါ --</option>'];
+      for (const p of allProducts) {
+        const qty = getStockQty(p);
+        options.push(
+          `<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)} (လက်ကျန်: ${qty})</option>`
+        );
+      }
+      sellSelect.innerHTML = options.join('');
+      if (allProducts.some((p) => String(p.id) === String(prevVal))) {
+        sellSelect.value = prevVal;
+      }
+    }
+
+    function renderProducts() {
+      const query = searchInput.value.trim().toLowerCase();
+      const filtered = query
+        ? allProducts.filter((p) => {
+            const name = String(p.name ?? '').toLowerCase();
+            const sku = String(p.sku ?? p.product_code ?? '').toLowerCase();
+            const id = String(p.id ?? '').toLowerCase();
+            return name.includes(query) || sku.includes(query) || id.includes(query);
+          })
+        : allProducts;
+
+      if (filtered.length === 0) {
+        const msg = query
+          ? `"${escapeHtml(searchInput.value.trim())}" နဲ့ ကိုက်ညီတဲ့ Product မတွေ့ပါ။`
+          : 'Product Data မရှိသေးပါ။';
+        productsBody.innerHTML = `<tr><td colspan="7">${msg}</td></tr>`;
+        return;
+      }
+
+      const isOwner = currentRole === 'owner';
+
+      productsBody.innerHTML = filtered.map((p) => {
+        const qty = getStockQty(p);
+        const skuVal = p.sku ?? p.product_code ?? '';
+        const isEditing = isOwner && String(editingProductId) === String(p.id);
+
+        const nameCell = isEditing
+          ? `<input type="text" class="inline-edit-input" id="edit-name" value="${escapeHtml(p.name)}" />`
+          : escapeHtml(p.name);
+
+        const skuCell = isEditing
+          ? `<input type="text" class="inline-edit-input" id="edit-sku" value="${escapeHtml(skuVal)}" />`
+          : escapeHtml(skuVal || '-');
+
+        const priceCell = isEditing
+          ? `<input type="number" class="inline-edit-input" id="edit-price" min="0" step="any" value="${escapeHtml(p.price ?? 0)}" />`
+          : escapeHtml(p.price ?? 0);
+
+        const qtyCell = isEditing
+          ? `<input type="number" class="inline-edit-input" id="edit-qty" min="0" step="1" value="${qty}" />`
+          : `<strong>${qty}</strong>`;
+
+        const fillCell = `
+          <div class="fill-group">
+            <input type="number" class="fill-input" data-fill-input="${escapeHtml(p.id)}" min="1" step="1" placeholder="+Qty" />
+            <button type="button" class="fill-btn" data-fill-btn="${escapeHtml(p.id)}">+ Fill</button>
+          </div>
+        `;
+
+        let editCell = '<span>Owner only</span>';
+        if (isOwner) {
+          editCell = isEditing
+            ? `
+              <div class="action-group">
+                <button type="button" class="save-btn" data-save-edit="${escapeHtml(p.id)}">Save</button>
+                <button type="button" class="cancel-btn" data-cancel-edit="1">Cancel</button>
+              </div>
+            `
+            : `<button type="button" class="edit-btn" data-start-edit="${escapeHtml(p.id)}">Edit</button>`;
+        }
+
+        return `
+          <tr>
+            <td class="id-cell">${escapeHtml(p.id)}</td>
+            <td>${nameCell}</td>
+            <td>${skuCell}</td>
+            <td>${priceCell}</td>
+            <td>${qtyCell}</td>
+            <td>${fillCell}</td>
+            <td>${editCell}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function loadProducts() {
+      const { data: products, error: prodError } = await supabaseClient
+        .from('products')
+        .select('*')
+        .order('id', { ascending: true });
+
+      if (prodError) {
+        productsBody.innerHTML = `<tr><td colspan="7">Products ဖတ်မရပါ: ${escapeHtml(prodError.message)}</td></tr>`;
+        return;
+      }
+
+      allProducts = products || [];
+      populateSellDropdown();
+      renderProducts();
+    }
+
+    async function loadSales() {
+      const { data: sales, error: salesError } = await supabaseClient
+        .from('sales')
+        .select('*')
+        .order('sold_at', { ascending: false })
+        .limit(50);
+
+      if (salesError) {
+        salesBody.innerHTML = `<tr><td colspan="6">Sales မှတ်တမ်း ဖတ်မရပါ (SQL Table ဖွဲ့ပြီးကြောင်း စစ်ပါ): ${escapeHtml(salesError.message)}</td></tr>`;
+        return;
+      }
+
+      if (!sales || sales.length === 0) {
+        salesBody.innerHTML = `<tr><td colspan="6">ရောင်းချမှု မှတ်တမ်း မရှိသေးပါ။</td></tr>`;
+        return;
+      }
+
+      salesBody.innerHTML = sales.map((s) => `
+        <tr>
+          <td>${escapeHtml(formatDateTime(s.sold_at))}</td>
+          <td>${escapeHtml(s.product_name)}</td>
+          <td><strong>-${escapeHtml(s.qty_sold)}</strong></td>
+          <td>${escapeHtml(s.unit_price ?? 0)}</td>
+          <td><strong>${escapeHtml(s.total_amount ?? 0)}</strong></td>
+          <td>${escapeHtml(s.sold_by_email || '-')}</td>
+        </tr>
+      `).join('');
+    }
+
+    async function handleFillStock(productId, btnEl) {
+      const inputEl = productsBody.querySelector(`[data-fill-input="${CSS.escape(productId)}"]`);
+      const addQty = parseInt(inputEl?.value ?? '', 10);
+
+      if (!Number.isInteger(addQty) || addQty <= 0) {
+        stockStatus.style.color = '#dc2626';
+        stockStatus.textContent = 'ထည့်မည့် Stock အရေအတွက်ကို 1 ထက်ကြီးတဲ့ ဂဏန်းထည့်ပါ။';
+        inputEl?.focus();
+        return;
+      }
+
+      const targetProduct = allProducts.find((item) => String(item.id) === String(productId));
+      const currentQty = targetProduct ? getStockQty(targetProduct) : 0;
+      const newQty = currentQty + addQty;
+
+      btnEl.disabled = true;
+      stockStatus.style.color = '#334155';
+      stockStatus.textContent = `"${targetProduct?.name ?? productId}" အတွက် Stock (+${addQty}) ဖြည့်နေပါသည်...`;
+
+      const { error: updateError } = await supabaseClient
+        .from('products')
+        .update({ stock_qty: newQty })
+        .eq('id', productId);
+
+      btnEl.disabled = false;
+
+      if (updateError) {
+        stockStatus.style.color = '#dc2626';
+        stockStatus.textContent = `Stock ဖြည့်မရပါ: ${updateError.message}`;
+        return;
+      }
+
+      stockStatus.style.color = '#16a34a';
+      stockStatus.textContent = `"${targetProduct?.name ?? productId}" Stock ကို ${currentQty} မှ ${newQty} သို့ ပြောင်းပြီးပါပြီ။`;
+      await loadProducts();
+    }
+
+    async function handleSaveEdit(productId) {
+      if (currentRole !== 'owner') return;
+
+      const nameVal = document.getElementById('edit-name')?.value.trim();
+      const skuVal = document.getElementById('edit-sku')?.value.trim() || null;
+      const priceVal = Number(document.getElementById('edit-price')?.value);
+      const qtyVal = parseInt(document.getElementById('edit-qty')?.value ?? '', 10);
+
+      if (!nameVal || !Number.isFinite(priceVal) || priceVal < 0 || !Number.isInteger(qtyVal) || qtyVal < 0) {
+        stockStatus.style.color = '#dc2626';
+        stockStatus.textContent = 'Edit တန်ဖိုးများ မှန်ကန်စွာ ဖြည့်ပါ။';
+        return;
+      }
+
+      stockStatus.style.color = '#334155';
+      stockStatus.textContent = 'ပြင်ဆင်ချက်များ သိမ်းနေပါသည်...';
+
+      const updatePayload = {
+        name: nameVal,
+        sku: skuVal,
+        price: priceVal,
+        stock_qty: qtyVal
+      };
+
+      const { error: editError } = await supabaseClient
+        .from('products')
+        .update(updatePayload)
+        .eq('id', productId);
+
+      if (editError) {
+        stockStatus.style.color = '#dc2626';
+        stockStatus.textContent = `Edit သိမ်းမရပါ: ${editError.message}`;
+        return;
+      }
+
+      editingProductId = null;
+      stockStatus.style.color = '#16a34a';
+      stockStatus.textContent = `"${nameVal}" ကို အောင်မြင်စွာ ပြင်ဆင်ပြီးပါပြီ။`;
+      await loadProducts();
+    }
+
+    (async function initDashboard() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) {
+        window.location.href = 'CClogin.html';
+        return;
+      }
+
+      currentUser = session.user;
+
+      const { data: profile, error: profileError } = await supabaseClient
+        .from('profiles')
+        .select('email, role')
+        .eq('id', currentUser.id)
+        .single();
+
+      if (profileError) {
+        userMetaEl.textContent = `User: ${currentUser.email} | Role error: ${profileError.message}`;
+      } else {
+        currentRole = profile.role;
+        userMetaEl.innerHTML = `User: <strong>${escapeHtml(profile.email)}</strong> <span class="badge">Role: ${escapeHtml(profile.role)}</span>`;
+        if (profile.role === 'owner') {
+          addSection.style.display = 'block';
+        }
+      }
+
+      searchInput.addEventListener('input', renderProducts);
+      clearSearchBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        renderProducts();
+        searchInput.focus();
+      });
+
+      productsBody.addEventListener('click', async (e) => {
+        const fillBtn = e.target.closest('[data-fill-btn]');
+        if (fillBtn) {
+          await handleFillStock(fillBtn.getAttribute('data-fill-btn'), fillBtn);
+          return;
+        }
+
+        const startEditBtn = e.target.closest('[data-start-edit]');
+        if (startEditBtn && currentRole === 'owner') {
+          editingProductId = startEditBtn.getAttribute('data-start-edit');
+          renderProducts();
+          return;
+        }
+
+        const cancelEditBtn = e.target.closest('[data-cancel-edit]');
+        if (cancelEditBtn) {
+          editingProductId = null;
+          renderProducts();
+          return;
+        }
+
+        const saveEditBtn = e.target.closest('[data-save-edit]');
+        if (saveEditBtn && currentRole === 'owner') {
+          await handleSaveEdit(saveEditBtn.getAttribute('data-save-edit'));
+        }
+      });
+
+      await Promise.all([loadProducts(), loadSales()]);
+
+      addForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (currentRole !== 'owner') {
+          addStatus.style.color = '#dc2626';
+          addStatus.textContent = 'Owner သာ ပစ္စည်းအသစ် ထည့်နိုင်ပါသည်။';
+          return;
+        }
+
+        addBtn.disabled = true;
+        addStatus.style.color = '#334155';
+        addStatus.textContent = 'ပစ္စည်းအသစ် ထည့်သွင်းနေပါသည်...';
+
+        const name = document.getElementById('prod-name').value.trim();
+        const sku = document.getElementById('prod-sku').value.trim() || null;
+        const codeValue = sku || `PROD-${Date.now()}`;
+        const price = Number(document.getElementById('prod-price').value);
+        const stockQty = parseInt(document.getElementById('prod-qty').value, 10);
+
+        const { error: insertError } = await supabaseClient
+          .from('products')
+          .insert([{
+            name,
+            sku,
+            product_code: codeValue,
+            price,
+            stock_qty: stockQty
+          }]);
+
+        addBtn.disabled = false;
+
+        if (insertError) {
+          addStatus.style.color = '#dc2626';
+          addStatus.textContent = `ထည့်မရပါ: ${insertError.message}`;
+          return;
+        }
+
+        addStatus.style.color = '#16a34a';
+        addStatus.textContent = `"${name}" ကို အောင်မြင်စွာ ထည့်ပြီးပါပြီ။`;
+        addForm.reset();
+        await loadProducts();
+      });
+
+      sellForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const productId = sellSelect.value;
+        const sellQty = parseInt(document.getElementById('sell-qty').value, 10);
+
+        if (!productId || !Number.isInteger(sellQty) || sellQty <= 0) {
+          sellStatus.style.color = '#dc2626';
+          sellStatus.textContent = 'ပစ္စည်းနှင့် ရောင်းမည့် အရေအတွက် (1 အထက်) ကို ရွေးပါ။';
+          return;
+        }
+
+        const targetProduct = allProducts.find((item) => String(item.id) === String(productId));
+        if (!targetProduct) {
+          sellStatus.style.color = '#dc2626';
+          sellStatus.textContent = 'ရွေးထားသော ပစ္စည်းကို ရှာမတွေ့ပါ။';
+          return;
+        }
+
+        const currentQty = getStockQty(targetProduct);
+        if (sellQty > currentQty) {
+          sellStatus.style.color = '#dc2626';
+          sellStatus.textContent = `လက်ကျန် (${currentQty}) ထက် ပိုရောင်းလို့ မရပါ။`;
+          return;
+        }
+
+        sellBtn.disabled = true;
+        sellStatus.style.color = '#334155';
+        sellStatus.textContent = `"${targetProduct.name}" (${sellQty}) ကို ရောင်းချမှု နုတ်နေပါသည်...`;
+
+        const newQty = currentQty - sellQty;
+        const unitPrice = Number(targetProduct.price ?? 0);
+        const totalAmount = unitPrice * sellQty;
+        const soldAtIso = new Date().toISOString();
+
+        const { error: deductError } = await supabaseClient
+          .from('products')
+          .update({ stock_qty: newQty })
+          .eq('id', productId);
+
+        if (deductError) {
+          sellBtn.disabled = false;
+          sellStatus.style.color = '#dc2626';
+          sellStatus.textContent = `Stock နုတ်မရပါ: ${deductError.message}`;
+          return;
+        }
+
+        const { error: saleLogError } = await supabaseClient
+          .from('sales')
+          .insert([{
+            product_id: productId,
+            product_name: targetProduct.name,
+            qty_sold: sellQty,
+            unit_price: unitPrice,
+            total_amount: totalAmount,
+            sold_by_email: currentUser.email,
+            sold_at: soldAtIso
+          }]);
+
+        sellBtn.disabled = false;
+
+        if (saleLogError) {
+          sellStatus.style.color = '#dc2626';
+          sellStatus.textContent = `Stock နုတ်ပြီးသော်လည်း Sales မှတ်တမ်း သိမ်းမရပါ: ${saleLogError.message}`;
+          await loadProducts();
+          return;
+        }
+
+        sellStatus.style.color = '#16a34a';
+        sellStatus.textContent = `"${targetProduct.name}" (${sellQty}) ရောင်းပြီးပါပြီ။ လက်ကျန်: ${currentQty} -> ${newQty} (${formatDateTime(soldAtIso)})`;
+        sellForm.reset();
+        await Promise.all([loadProducts(), loadSales()]);
+      });
+
+      logoutBtn.addEventListener('click', async () => {
+        await supabaseClient.auth.signOut();
+        window.location.href = 'CClogin.html';
+      });
+    })();
+  </script>
+</body>
+</html>
